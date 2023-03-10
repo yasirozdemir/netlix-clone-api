@@ -54,6 +54,22 @@ mediasRouter.get("/:mediasId", async (req, res, next) => {
 // PUT
 mediasRouter.put("/:mediasId", async (req, res, next) => {
   try {
+    const medias = await getMedias();
+    const index = medias.findIndex((m) => m.id === req.params.mediasId);
+    if (index !== -1) {
+      const updatedMedia = {
+        ...medias[index],
+        ...req.body,
+        updatedAt: new Date(),
+      };
+      medias[index] = updatedMedia;
+      await setMedias(medias);
+      res.send(`Media with id ${updatedMedia.id} has been updated!`);
+    } else {
+      next(
+        createHttpError(404, `Media with id ${req.params.mediasId} not found!`)
+      );
+    }
   } catch (error) {
     next(error);
   }
@@ -84,7 +100,6 @@ mediasRouter.post(
     try {
       const medias = await getMedias();
       const index = medias.findIndex((m) => m.id === req.params.mediasId);
-
       if (index !== -1) {
         medias[index].poster = req.file.path;
         await setMedias(medias);
