@@ -45,7 +45,11 @@ mediasRouter.get("/:mediasId", async (req, res, next) => {
   try {
     const medias = await getMedias();
     const foundedMedia = medias.find((m) => m.id === req.params.mediasId);
-    res.send(foundedMedia);
+    if (foundedMedia) res.send(foundedMedia);
+    else
+      next(
+        createHttpError(404, `Media with id ${req.params.mediasId} not found!`)
+      );
   } catch (error) {
     next(error);
   }
@@ -64,7 +68,7 @@ mediasRouter.put("/:mediasId", async (req, res, next) => {
       };
       medias[index] = updatedMedia;
       await setMedias(medias);
-      res.send(`Media with id ${updatedMedia.id} has been updated!`);
+      res.send({ success: true, updatedMedia: updatedMedia });
     } else {
       next(
         createHttpError(404, `Media with id ${req.params.mediasId} not found!`)
@@ -78,6 +82,18 @@ mediasRouter.put("/:mediasId", async (req, res, next) => {
 // DELETE
 mediasRouter.delete("/:mediasId", async (req, res, next) => {
   try {
+    const medias = await getMedias();
+    const remainingMedias = medias.filter((m) => m.id !== req.params.mediasId);
+    if (remainingMedias.length < medias.length) {
+      await setMedias(remainingMedias);
+      res
+        .status(204)
+        .send({ success: true, message: "Media succesfully deleted!" });
+    } else {
+      next(
+        createHttpError(404, `Media with id ${req.params.mediasId} not found!`)
+      );
+    }
   } catch (error) {
     next(error);
   }
