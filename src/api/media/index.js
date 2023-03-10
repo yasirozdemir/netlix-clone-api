@@ -5,6 +5,7 @@ import uniqid from "uniqid";
 import { getMedias, setMedias } from "../../lib/fs-tools.js";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { mediaToPDFAsync } from "../../lib/pdf-tools.js";
 
 const mediasRouter = Express.Router();
 
@@ -137,5 +138,27 @@ mediasRouter.post(
     }
   }
 );
+
+// CREATE PDF into DATA/PDFs
+mediasRouter.get("/:mediasId/pdf/create", async (req, res, next) => {
+  try {
+    const medias = await getMedias();
+    const foundedMedia = medias.find((m) => m.id === req.params.mediasId);
+    if (foundedMedia) {
+      await mediaToPDFAsync(foundedMedia);
+      res
+        .status(201)
+        .send({
+          success: true,
+          message: `PDF version of ${foundedMedia.title} created!`,
+        });
+    } else
+      next(
+        createHttpError(404, `Media with id ${req.params.mediasId} not found!`)
+      );
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default mediasRouter;

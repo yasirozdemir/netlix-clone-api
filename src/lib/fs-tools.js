@@ -11,7 +11,7 @@ export const dataFolderPath = join(
 );
 export const PDFsFolderPath = join(dataFolderPath, "/PDFs");
 export const getPDFWritableStream = (filename) =>
-  createWriteStream(PDFsFolderPath, filename);
+  createWriteStream(join(PDFsFolderPath, filename));
 export const mediaJSONPath = join(dataFolderPath, "media.json");
 export const getMedias = () => readJSON(mediaJSONPath);
 export const setMedias = (medias) => writeJSON(mediaJSONPath, medias);

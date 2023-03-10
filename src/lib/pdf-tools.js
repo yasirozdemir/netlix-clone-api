@@ -22,10 +22,16 @@ export const mediaToPDF = async (media) => {
         width: 350,
       },
       {
-        text: [media.title, media.year, media.type],
+        text: [media.title],
         bold: true,
-        margin: [0, 20],
+        margin: [0, 20, 0, 0],
         fontSize: 24,
+      },
+      {
+        text: [media.year],
+      },
+      {
+        text: [media.type],
       },
     ],
     defaultStyle: {
@@ -40,7 +46,7 @@ export const mediaToPDF = async (media) => {
 
 export const mediaToPDFAsync = async (media) => {
   const source = await mediaToPDF(media);
-  const destination = getPDFWritableStream(`${media.title}.pdf`);
+  const destination = getPDFWritableStream(`${media.id}.pdf`);
   const promiseBasedPipeline = promisify(pipeline);
   await promiseBasedPipeline(source, destination);
 };
