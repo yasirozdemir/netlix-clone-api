@@ -20,13 +20,11 @@ mediasRouter.post("/", async (req, res, next) => {
     };
     medias.push(newMedia);
     await setMedias(medias);
-    res
-      .status(201)
-      .send({
-        success: "true",
-        message: "Media successfully created!",
-        mediaId: newMedia.id,
-      });
+    res.status(201).send({
+      success: "true",
+      message: "Media successfully created!",
+      mediaId: newMedia.id,
+    });
   } catch (error) {
     next(error);
   }
