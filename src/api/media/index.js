@@ -112,7 +112,7 @@ const cloudinaryUploader = multer({
 
 // POST A POSTER
 mediasRouter.post(
-  "/:mediasId/cover",
+  "/:mediasId/poster",
   cloudinaryUploader,
   async (req, res, next) => {
     try {
