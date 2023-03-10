@@ -5,7 +5,8 @@ import uniqid from "uniqid";
 import { getMedias, setMedias } from "../../lib/fs-tools.js";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import { mediaToPDFAsync } from "../../lib/pdf-tools.js";
+import { mediaToPDF, mediaToPDFAsync } from "../../lib/pdf-tools.js";
+import { pipeline } from "stream";
 
 const mediasRouter = Express.Router();
 
@@ -146,12 +147,34 @@ mediasRouter.get("/:mediasId/pdf/create", async (req, res, next) => {
     const foundedMedia = medias.find((m) => m.id === req.params.mediasId);
     if (foundedMedia) {
       await mediaToPDFAsync(foundedMedia);
-      res
-        .status(201)
-        .send({
-          success: true,
-          message: `PDF version of ${foundedMedia.title} created!`,
-        });
+      res.status(201).send({
+        success: true,
+        message: `PDF version of ${foundedMedia.title} created!`,
+      });
+    } else
+      next(
+        createHttpError(404, `Media with id ${req.params.mediasId} not found!`)
+      );
+  } catch (error) {
+    next(error);
+  }
+});
+
+// DOWNLOAD PDF
+mediasRouter.get("/:mediasId/pdf/download", async (req, res, next) => {
+  try {
+    const medias = await getMedias();
+    const foundedMedia = medias.find((m) => m.id === req.params.mediasId);
+    if (foundedMedia) {
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=${foundedMedia.id}.pdf`
+      );
+      const source = await mediaToPDF(foundedMedia);
+      const destination = res;
+      pipeline(source, destination, (err) => {
+        console.log(err);
+      });
     } else
       next(
         createHttpError(404, `Media with id ${req.params.mediasId} not found!`)
