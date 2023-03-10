@@ -2,7 +2,7 @@ import Express from "express";
 import createHttpError from "http-errors";
 import multer from "multer";
 import uniqid from "uniqid";
-import { getMedia, setMedia } from "../../lib/fs-tools.js";
+import { getMedias, setMedias } from "../../lib/fs-tools.js";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 
@@ -11,6 +11,22 @@ const mediasRouter = Express.Router();
 // POST
 mediasRouter.post("/", async (req, res, next) => {
   try {
+    const medias = await getMedias();
+    const newMedia = {
+      ...req.body,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      id: uniqid(),
+    };
+    medias.push(newMedia);
+    await setMedias(medias);
+    res
+      .status(201)
+      .send({
+        success: "true",
+        message: "Media successfully created!",
+        mediaId: newMedia.id,
+      });
   } catch (error) {
     next(error);
   }

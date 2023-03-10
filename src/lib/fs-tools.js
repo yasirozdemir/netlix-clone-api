@@ -9,5 +9,5 @@ export const dataFolderPath = join(
   "../data"
 );
 export const mediaJSONPath = join(dataFolderPath, "media.json");
-export const getMedia = () => readJSON(mediaJSONPath);
-export const setMedia = (medias) => writeJSON(mediaJSONPath, medias);
+export const getMedias = () => readJSON(mediaJSONPath);
+export const setMedias = (medias) => writeJSON(mediaJSONPath, medias);

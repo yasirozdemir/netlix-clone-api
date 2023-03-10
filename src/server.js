@@ -32,7 +32,7 @@ server.use(
 );
 
 server.use(Express.json());
-server.use(mediasRouter);
+server.use("/medias", mediasRouter);
 
 server.use(badRequestHandler);
 server.use(unauthorizedHandler);
