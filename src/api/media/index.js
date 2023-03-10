@@ -36,7 +36,14 @@ mediasRouter.post("/", async (req, res, next) => {
 mediasRouter.get("/", async (req, res, next) => {
   try {
     const medias = await getMedias();
-    res.send(medias);
+    if (req.query && req.query.title) {
+      const filteredMedias = medias.filter((m) =>
+        m.title.toLowerCase().includes(req.query.title.toLowerCase())
+      );
+      res.send(filteredMedias);
+    } else {
+      res.send(medias);
+    }
   } catch (error) {
     next(error);
   }
