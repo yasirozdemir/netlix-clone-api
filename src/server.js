@@ -7,6 +7,8 @@ import {
   notFoundHandler,
   unauthorizedHandler,
 } from "./errorHandlers.js";
+import mediasRouter from "./api/media/index.js";
+import listEndpoints from "express-list-endpoints";
 
 const server = Express();
 const port = process.env.PORT || 3001;
@@ -30,6 +32,7 @@ server.use(
 );
 
 server.use(Express.json());
+server.use(mediasRouter);
 
 server.use(badRequestHandler);
 server.use(unauthorizedHandler);
@@ -37,5 +40,6 @@ server.use(notFoundHandler);
 server.use(genericErrorHandler);
 
 server.listen(port, () => {
+  console.table(listEndpoints(server));
   console.log("Server is running on port:", port);
 });
