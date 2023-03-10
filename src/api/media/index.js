@@ -33,6 +33,8 @@ mediasRouter.post("/", async (req, res, next) => {
 // GET ALL
 mediasRouter.get("/", async (req, res, next) => {
   try {
+    const medias = await getMedias();
+    res.send(medias);
   } catch (error) {
     next(error);
   }
@@ -41,6 +43,9 @@ mediasRouter.get("/", async (req, res, next) => {
 // GET BY ID
 mediasRouter.get("/:mediasId", async (req, res, next) => {
   try {
+    const medias = await getMedias();
+    const foundedMedia = medias.find((m) => m.id === req.params.mediasId);
+    res.send(foundedMedia);
   } catch (error) {
     next(error);
   }
