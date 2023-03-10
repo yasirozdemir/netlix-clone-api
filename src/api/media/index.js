@@ -77,6 +77,25 @@ mediasRouter.post(
   cloudinaryUploader,
   async (req, res, next) => {
     try {
+      const medias = await getMedias();
+      const index = medias.findIndex((m) => m.id === req.params.mediasId);
+
+      if (index !== -1) {
+        medias[index].poster = req.file.path;
+        await setMedias(medias);
+        res.status(201).send({
+          success: "true",
+          message: "Poster successfully added!",
+          mediaId: req.params.mediasId,
+        });
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Media with the id ${req.params.mediasId} not found!`
+          )
+        );
+      }
     } catch (error) {
       next(error);
     }
